@@ -1,38 +1,43 @@
 """
-MERGE SORT - DETAILED NOTES + CODE (PYTHON)
+MERGE SORT ALGORITHM
+DETAILED NOTES + CODE (PYTHON)
 
 ------------------------------------------------
 WHAT IS MERGE SORT?
 ------------------------------------------------
-Merge Sort is a divide-and-conquer based sorting algorithm.
+Merge Sort is a classic Divide and Conquer
+sorting algorithm.
 
-The main idea is:
-- Divide the array into two halves
-- Recursively sort each half
-- Merge the two sorted halves into one sorted array
+It works in three major steps:
+1. Divide  – Split the array into two halves
+2. Conquer – Recursively sort each half
+3. Combine – Merge the two sorted halves
 
-------------------------------------------------
-DIVIDE AND CONQUER STRATEGY:
-------------------------------------------------
-1. Divide:
-   - Split the array into two halves until each subarray
-     has only one element.
-
-2. Conquer:
-   - Sort the smaller subarrays recursively.
-
-3. Combine (Merge):
-   - Merge two sorted subarrays into one sorted array.
+Merge Sort guarantees O(n log n) time complexity
+in best, average, and worst cases.
 
 ------------------------------------------------
-WHY MERGE SORT WORKS:
+WHY USE MERGE SORT?
 ------------------------------------------------
-- A single element is always sorted.
-- By merging sorted subarrays carefully, we get a fully
-  sorted array.
+- Predictable performance
+- Very efficient for large datasets
+- Stable sorting algorithm
+- Used internally in many systems
 
 ------------------------------------------------
-TIME AND SPACE COMPLEXITY:
+EXAMPLE:
+------------------------------------------------
+Input:  [64, 34, 25, 12, 22, 11, 90]
+Output: [11, 12, 22, 25, 34, 64, 90]
+
+------------------------------------------------
+APPROACH OVERVIEW:
+------------------------------------------------
+- Recursively divide the array until size = 1
+- Merge subarrays in sorted order
+
+------------------------------------------------
+TIME & SPACE COMPLEXITY:
 ------------------------------------------------
 Time Complexity:
 - Best Case:    O(n log n)
@@ -40,110 +45,97 @@ Time Complexity:
 - Worst Case:   O(n log n)
 
 Space Complexity:
-- O(n) → Requires extra space for merging
+- O(n) (extra space for merging)
 
 ------------------------------------------------
-IMPORTANT INTERVIEW NOTES:
-------------------------------------------------
-- Merge Sort is a stable sorting algorithm.
-- Guaranteed O(n log n) time complexity.
-- Preferred when consistent performance is required.
-- Not an in-place sorting algorithm (needs extra memory).
-
-------------------------------------------------
-EDGE CASES:
-------------------------------------------------
-- Empty array → already sorted
-- Single element → already sorted
-- Array with duplicate elements
-
-------------------------------------------------
-IMPLEMENTATION BELOW:
+CODE IMPLEMENTATION:
 ------------------------------------------------
 """
 
 
-def merge_sort(arr):
+def merge_sort(arr, l, r):
     """
-    Sorts the given list in ascending order using Merge Sort.
-
-    Parameters:
-    arr (list): List of integers to be sorted
-
-    Returns:
-    list: Sorted list
+    Recursively divides the array and sorts it.
     """
 
-    # Base case:
-    # If the array has 0 or 1 element, it is already sorted
-    if len(arr) <= 1:
-        return arr
+    # Base condition: if subarray has one or zero elements
+    if l < r:
 
-    # ------------------------------------------------
-    # DIVIDE STEP
-    # ------------------------------------------------
+        # Find the middle point
+        mid = (l + r) // 2
 
-    # Find the middle index
-    mid = len(arr) // 2
+        # Recursively sort the left half
+        merge_sort(arr, l, mid)
 
-    # Divide the array into left and right halves
-    left_half = arr[:mid]
-    right_half = arr[mid:]
+        # Recursively sort the right half
+        merge_sort(arr, mid + 1, r)
 
-    # ------------------------------------------------
-    # CONQUER STEP (RECURSION)
-    # ------------------------------------------------
-
-    # Recursively sort both halves
-    left_sorted = merge_sort(left_half)
-    right_sorted = merge_sort(right_half)
-
-    # ------------------------------------------------
-    # COMBINE STEP (MERGE)
-    # ------------------------------------------------
-
-    # Merge the two sorted halves
-    return merge(left_sorted, right_sorted)
+        # Merge the two sorted halves
+        merge(arr, l, mid, r)
 
 
-def merge(left, right):
+def merge(arr, l, mid, r):
     """
-    Merges two sorted lists into one sorted list.
-
-    Parameters:
-    left (list): First sorted list
-    right (list): Second sorted list
-
-    Returns:
-    list: Merged sorted list
+    Merges two sorted subarrays:
+    arr[l..mid] and arr[mid+1..r]
     """
 
-    merged = []  # Temporary list to store merged result
-    i = 0  # Pointer for left list
-    j = 0  # Pointer for right list
+    # Create temporary arrays
+    left = arr[l : mid + 1]
+    right = arr[mid + 1 : r + 1]
 
-    # Compare elements from both lists
+    i = 0  # Pointer for left array
+    j = 0  # Pointer for right array
+    k = l  # Pointer for main array
+
+    # Merge left and right arrays
     while i < len(left) and j < len(right):
 
-        # Take smaller element and add to merged list
         if left[i] <= right[j]:
-            merged.append(left[i])
+            arr[k] = left[i]
             i += 1
         else:
-            merged.append(right[j])
+            arr[k] = right[j]
             j += 1
 
-    # Add remaining elements from left list (if any)
+        k += 1
+
+    # Copy remaining elements from left array (if any)
     while i < len(left):
-        merged.append(left[i])
+        arr[k] = left[i]
         i += 1
+        k += 1
 
-    # Add remaining elements from right list (if any)
+    # Copy remaining elements from right array (if any)
     while j < len(right):
-        merged.append(right[j])
+        arr[k] = right[j]
         j += 1
+        k += 1
 
-    return merged
+
+"""
+------------------------------------------------
+DRY RUN (SMALL EXAMPLE)
+------------------------------------------------
+Array: [34, 25, 11]
+
+Split:
+Left  = [34]
+Right = [25, 11]
+
+Sort Right:
+Split [25, 11] → [25] and [11]
+Merge → [11, 25]
+
+Final Merge:
+Merge [34] and [11, 25]
+→ Compare 34 & 11 → take 11
+→ Compare 34 & 25 → take 25
+→ Take remaining 34
+
+Result: [11, 25, 34]
+------------------------------------------------
+"""
 
 
 # ------------------------------------------------
@@ -151,14 +143,10 @@ def merge(left, right):
 # ------------------------------------------------
 if __name__ == "__main__":
 
-    # Example input array
-    data = [38, 27, 43, 3, 9, 82, 10]
+    arr = [64, 34, 25, 12, 22, 11, 90]
 
-    # Print original array
-    print("Original array:", data)
+    print("Original Array:", arr)
 
-    # Call merge sort function
-    sorted_data = merge_sort(data)
+    merge_sort(arr, 0, len(arr) - 1)
 
-    # Print sorted array
-    print("Sorted array:", sorted_data)
+    print("Sorted Array:", arr)
