@@ -1,135 +1,79 @@
 """
-QUICK SORT (FIRST ELEMENT AS PIVOT) - DETAILED NOTES + CODE (PYTHON)
+QUICK SORT ALGORITHM
+DETAILED NOTES + CODE (PYTHON)
 
 ------------------------------------------------
 WHAT IS QUICK SORT?
 ------------------------------------------------
-Quick Sort is a divide-and-conquer based sorting algorithm.
+Quick Sort is a Divide and Conquer sorting algorithm.
 
-The main idea is:
-- Pick a pivot element
-- Place the pivot at its correct position
-- Place all smaller elements to the left of the pivot
-- Place all larger elements to the right of the pivot
-- Recursively apply the same process on left and right subarrays
+Main steps:
+1. Choose a Pivot element
+2. Partition the array around the pivot
+3. Recursively apply Quick Sort to left and right subarrays
 
-------------------------------------------------
-PIVOT SELECTION (FIRST ELEMENT):
-------------------------------------------------
-In this implementation:
-- The first element of the array is chosen as the pivot.
-- This is easy to understand and commonly asked in interviews.
-
-⚠️ NOTE:
-- This pivot choice gives worst-case O(n^2) for already
-  sorted or reverse sorted arrays.
+Quick Sort is usually very fast in practice due to
+good cache performance, but it has a worst-case
+time complexity of O(n²) if pivot selection is poor.
 
 ------------------------------------------------
-DIVIDE AND CONQUER STRATEGY:
+WHY USE QUICK SORT?
 ------------------------------------------------
-1. Divide:
-   - Partition the array around the pivot.
-
-2. Conquer:
-   - Recursively sort left and right subarrays.
-
-3. Combine:
-   - No merging needed (in-place sorting).
+- Very fast in average cases
+- In-place sorting (no extra arrays)
+- Widely used in real-world libraries
 
 ------------------------------------------------
-TIME AND SPACE COMPLEXITY:
+PIVOT STRATEGY USED HERE:
+------------------------------------------------
+- The FIRST element of the array segment is chosen
+  as the pivot.
+
+------------------------------------------------
+TIME & SPACE COMPLEXITY:
 ------------------------------------------------
 Time Complexity:
 - Best Case:    O(n log n)
 - Average Case: O(n log n)
-- Worst Case:   O(n^2)
+- Worst Case:   O(n²)
 
 Space Complexity:
-- O(log n) average (recursion stack)
-- O(n) worst case
+- Average: O(log n) due to recursion stack
+- Worst:   O(n)
 
 ------------------------------------------------
-IMPORTANT INTERVIEW NOTES:
-------------------------------------------------
-- Quick Sort is NOT stable.
-- In-place sorting algorithm.
-- Faster than Merge Sort in practice.
-- Pivot selection greatly affects performance.
-
-------------------------------------------------
-EDGE CASES:
-------------------------------------------------
-- Empty array → already sorted
-- Single element → already sorted
-- Duplicate elements allowed
-
-------------------------------------------------
-IMPLEMENTATION BELOW:
+CODE IMPLEMENTATION:
 ------------------------------------------------
 """
 
 
-def quick_sort(arr, low, high):
-    """
-    Sorts the array in ascending order using Quick Sort
-    with the FIRST element as pivot.
-
-    Parameters:
-    arr (list): List of integers
-    low (int): Starting index
-    high (int): Ending index
-    """
-
-    # Base condition
-    if low < high:
-
-        # Partition the array and get pivot index
-        pivot_index = partition(arr, low, high)
-
-        # Recursively sort left subarray
-        quick_sort(arr, low, pivot_index - 1)
-
-        # Recursively sort right subarray
-        quick_sort(arr, pivot_index + 1, high)
-
-
 def partition(arr, low, high):
     """
-    Partitions the array using the FIRST element as pivot.
+    Partitions the array using the first element as pivot.
 
-    Parameters:
-    arr (list): List of integers
-    low (int): Starting index (pivot position)
-    high (int): Ending index
-
-    Returns:
-    int: Final position of the pivot
+    After partition:
+    - Elements <= pivot are on the left
+    - Elements > pivot are on the right
     """
 
-    # Choose the first element as pivot
-    pivot = arr[low]
+    pivot = arr[low]  # Choose first element as pivot
+    i = low  # Pointer starting from left
+    j = high  # Pointer starting from right
 
-    # Initialize pointers
-    i = low + 1  # Left pointer
-    j = high  # Right pointer
+    # Continue until pointers cross
+    while i < j:
 
-    # Loop until pointers cross
-    while True:
-
-        # Move i to the right while elements are <= pivot
-        while i <= j and arr[i] <= pivot:
+        # Move i right while elements are <= pivot
+        while i <= high - 1 and arr[i] <= pivot:
             i += 1
 
-        # Move j to the left while elements are > pivot
-        while i <= j and arr[j] > pivot:
+        # Move j left while elements are > pivot
+        while j >= low + 1 and arr[j] > pivot:
             j -= 1
 
-        # If pointers cross, stop
-        if i > j:
-            break
-
-        # Swap elements at i and j
-        arr[i], arr[j] = arr[j], arr[i]
+        # Swap if pointers haven't crossed
+        if i < j:
+            arr[i], arr[j] = arr[j], arr[i]
 
     # Place pivot at its correct position
     arr[low], arr[j] = arr[j], arr[low]
@@ -138,19 +82,55 @@ def partition(arr, low, high):
     return j
 
 
+def quick_sort(arr, low, high):
+    """
+    Recursively sorts the array using Quick Sort.
+    """
+
+    # Base condition: at least two elements
+    if low < high:
+
+        # Partition the array
+        p_index = partition(arr, low, high)
+
+        # Sort elements before pivot
+        quick_sort(arr, low, p_index - 1)
+
+        # Sort elements after pivot
+        quick_sort(arr, p_index + 1, high)
+
+
+"""
+------------------------------------------------
+DRY RUN (SMALL EXAMPLE)
+------------------------------------------------
+Array: [34, 25, 11]
+
+Pivot = 34
+Partition:
+- Left: [25, 11]
+- Right: []
+
+Recursive calls:
+quick_sort([25, 11])
+→ Pivot = 25
+→ Merge → [11, 25]
+
+Final merge:
+[11, 25, 34]
+------------------------------------------------
+"""
+
+
 # ------------------------------------------------
 # DRIVER CODE (FOR TESTING)
 # ------------------------------------------------
 if __name__ == "__main__":
 
-    # Example input array
-    data = [10, 7, 8, 9, 1, 5]
+    arr = [64, 34, 25, 12, 22, 12, 12, 11, 90]
 
-    # Print original array
-    print("Original array:", data)
+    print("Original Array:", arr)
 
-    # Call quick sort
-    quick_sort(data, 0, len(data) - 1)
+    quick_sort(arr, 0, len(arr) - 1)
 
-    # Print sorted array
-    print("Sorted array:", data)
+    print("Sorted Array:", arr)
